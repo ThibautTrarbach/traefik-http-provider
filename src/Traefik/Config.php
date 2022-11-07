@@ -178,4 +178,41 @@ class Config {
 
         return json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
+    
+    
+    /**
+     * @return array
+     */
+    public function getArrayConfig(): array {
+        $result = [];
+
+        foreach ($this->config as $configType) {
+            /**
+             * @var $config ConfigObject
+             */
+            foreach ($configType as $config) {
+                if (!$config instanceof ConfigObject) {
+                    var_dump($config);
+                    exit;
+                }
+                $transport = $config->getTraefikTransport();
+                $classType = $config->getTraefikType();
+                $name = $config->getName();
+                $data = $config->getData();
+
+                if (!isset($result[$transport])) {
+                    $result[$transport] = [];
+                }
+                if (!isset($result[$transport][$classType])) {
+                    $result[$transport][$classType] = [];
+                }
+                if (!isset($result[$transport][$classType][$name])) {
+                    $result[$transport][$classType][$name] = [];
+                }
+                $result[$transport][$classType][$name] = $data;
+            }
+        }
+
+        return $result;
+    }
 }
